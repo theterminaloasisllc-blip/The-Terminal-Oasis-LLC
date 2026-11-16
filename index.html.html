@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Terminal Oasis - Real-Time Calm Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        calm: {
+                            50: '#f4f8f7',
+                            100: '#e3eeec',
+                            200: '#c5dcd8',
+                            300: '#9ac2bd',
+                            400: '#6ba39d',
+                            500: '#4a847e',
+                            600: '#386c66',
+                            700: '#2e5753',
+                            800: '#274744',
+                            900: '#223c39',
+                        },
+                        cream: '#f9f6f0',
+                        softblue: '#edf5f7',
+                        mintsoft: '#e6f4f1'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .transition-smooth { transition: all 0.25s ease-in-out; }
+        /* Low sensory mode overrides */
+        body.low-stim { background-color: #ffffff !important; color: #000000 !important; }
+        body.low-stim * { box-shadow: none !important; animation: none !important; transition: none !important; }
+    </style>
+</head>
+<body class="bg-cream dark:bg-zinc-900 text-calm-900 dark:text-zinc-100 min-h-screen flex flex-col selection:bg-calm-200 transition-smooth">
+
+    <!-- Top Live Status & Clock Bar -->
+    <header class="bg-white dark:bg-zinc-800 border-b border-calm-200 dark:border-zinc-700 px-6 py-3 flex flex-wrap items-center justify-between shadow-sm gap-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-2xl bg-mintsoft dark:bg-emerald-900/40 text-calm-600 dark:text-emerald-400 flex items-center justify-center text-lg font-bold border border-calm-300 dark:border-emerald-700">
+                <i class="fa-solid fa-seedling"></i>
+            </div>
+            <div>
+                <h1 class="text-base font-bold text-calm-900 dark:text-zinc-100">The Terminal Oasis</h1>
+                <p class="text-xs text-calm-600 dark:text-zinc-400 font-medium">Real-Time Autism-Friendly Workspace</p>
+            </div>
+        </div>
+
+        <!-- Live Clock & Live Revenue Ticker -->
+        <div class="flex items-center space-x-6 text-xs font-semibold">
+            <div class="flex items-center space-x-2 bg-softblue dark:bg-zinc-700 px-3 py-1.5 rounded-xl border border-calm-200 dark:border-zinc-600">
+                <i class="fa-regular fa-clock text-calm-600 dark:text-emerald-400"></i>
+                <span id="live-clock">00:00:00 AM</span>
+            </div>
+            <div class="flex items-center space-x-2 bg-mintsoft dark:bg-emerald-900/30 px-3 py-1.5 rounded-xl border border-calm-200 dark:border-emerald-800">
+                <i class="fa-solid fa-chart-line text-calm-600 dark:text-emerald-400"></i>
+                <span>Live Revenue: <strong id="live-revenue-ticker" class="font-mono text-calm-900 dark:text-emerald-300">$4,850.00</strong></span>
+            </div>
+        </div>
+
+        <!-- Sensory & Accessibility Controls -->
+        <div class="flex items-center space-x-2">
+            <button onclick="toggleSpeech()" id="speech-btn" class="bg-softblue dark:bg-zinc-700 hover:bg-calm-200 dark:hover:bg-zinc-600 text-calm-800 dark:text-zinc-200 px-3 py-2 rounded-xl text-xs font-semibold border border-calm-300 dark:border-zinc-600 transition-smooth">
+                <i class="fa-solid fa-volume-high text-calm-600 dark:text-emerald-400 mr-1"></i> <span id="speech-label">Read Aloud</span>
+            </button>
+            <button onclick="cycleSensoryMode()" id="sensory-mode-btn" class="bg-mintsoft dark:bg-emerald-900/40 hover:bg-calm-200 dark:hover:bg-emerald-800 text-calm-800 dark:text-emerald-200 px-3 py-2 rounded-xl text-xs font-semibold border border-calm-300 dark:border-emerald-700 transition-smooth">
+                <i class="fa-solid fa-eye mr-1"></i> <span id="sensory-label">Mode: Gentle</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <div class="max-w-6xl mx-auto px-4 py-6 flex-1 flex flex-col w-full gap-6">
+
+        <!-- Step Navigation Tabs (1 to 6) -->
+        <nav class="bg-white dark:bg-zinc-800 p-3 rounded-3xl shadow-sm border border-calm-200 dark:border-zinc-700 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+            <button onclick="switchTab(1)" id="tab-1" class="tab-btn py-3 px-3 rounded-2xl text-xs font-bold text-center bg-calm-500 text-white transition-smooth shadow-sm flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-house-chimney"></i>
+                <span>1. Welcome</span>
+            </button>
+            <button onclick="switchTab(2)" id="tab-2" class="tab-btn py-3 px-3 rounded-2xl text-xs font-bold text-center bg-calm-100 dark:bg-zinc-700 text-calm-700 dark:text-zinc-300 hover:bg-calm-200 dark:hover:bg-zinc-600 transition-smooth flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-bell"></i>
+                <span>2. Live Bookings</span>
+            </button>
+            <button onclick="switchTab(3)" id="tab-3" class="tab-btn py-3 px-3 rounded-2xl text-xs font-bold text-center bg-calm-100 dark:bg-zinc-700 text-calm-700 dark:text-zinc-300 hover:bg-calm-200 dark:hover:bg-zinc-600 transition-smooth flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-credit-card"></i>
+                <span>3. Payments & Refunds</span>
+            </button>
+            <button onclick="switchTab(4)" id="tab-4" class="tab-btn py-3 px-3 rounded-2xl text-xs font-bold text-center bg-calm-100 dark:bg-zinc-700 text-calm-700 dark:text-zinc-300 hover:bg-calm-200 dark:hover:bg-zinc-600 transition-smooth flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-globe"></i>
+                <span>4. Website</span>
+            </button>
+            <button onclick="switchTab(5)" id="tab-5" class="tab-btn py-3 px-3 rounded-2xl text-xs font-bold text-center bg-calm-100 dark:bg-zinc-700 text-calm-700 dark:text-zinc-300 hover:bg-calm-200 dark:hover:bg-zinc-600 transition-smooth flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-calculator"></i>
+                <span>5. Payroll & Accounting</span>
+            </button>
+            <button onclick="switchTab(6)" id="tab-6" class="tab-btn py-3 px-3 rounded-2xl text-xs font-bold text-center bg-calm-100 dark:bg-zinc-700 text-calm-700 dark:text-zinc-300 hover:bg-calm-200 dark:hover:bg-zinc-600 transition-smooth flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>6. Subscriptions</span>
+            </button>
+        </nav>
+
+        <!-- Main Content Area & Real-Time Assistant Sidebar -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
+            
+            <!-- Left 2 Columns: Active Module Display -->
+            <main id="module-container" class="lg:col-span-2 bg-white dark:bg-zinc-800 p-8 rounded-3xl shadow-sm border border-calm-200 dark:border-zinc-700 flex flex-col justify-between space-y-6">
+                <!-- Injected via JavaScript based on active tab -->
+            </main>
+
+            <!-- Right Column: Real-Time Assistant & Live Notification Feed -->
+            <aside class="bg-white dark:bg-zinc-800 p-6 rounded-3xl shadow-sm border border-calm-200 dark:border-zinc-700 flex flex-col space-y-6">
+                
+                <!-- Assistant Box -->
+                <div class="bg-softblue dark:bg-zinc-700/50 p-5 rounded-2xl border border-calm-300 dark:border-zinc-600 space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-calm-500 text-white flex items-center justify-center text-xs font-bold">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-calm-800 dark:text-emerald-400">Calm Assistant Guide</h3>
+                            <p class="text-[11px] text-calm-600 dark:text-zinc-400">Literal & step-by-step help</p>
+                        </div>
+                    </div>
+                    <p id="assistant-speech-box" class="text-xs text-calm-900 dark:text-zinc-200 leading-relaxed font-medium">
+                        Welcome! I am here to guide you calmly through each part of your workspace. Click any tab above or ask me a question below.
+                    </p>
+                    <div class="flex space-x-2 pt-1">
+                        <input type="text" id="assistant-input" placeholder="Ask a question..." class="flex-1 bg-white dark:bg-zinc-800 border border-calm-300 dark:border-zinc-600 rounded-xl px-3 py-2 text-xs text-calm-900 dark:text-zinc-100 focus:outline-none">
+                        <button onclick="askAssistant()" class="bg-calm-500 hover:bg-calm-600 text-white px-3.5 py-2 rounded-xl text-xs font-semibold">Ask</button>
+                    </div>
+                </div>
+
+                <!-- Live Notification Feed & Real-Time Incoming Stream -->
+                <div class="flex-1 flex flex-col space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-calm-700 dark:text-zinc-300 flex items-center space-x-2">
+                            <i class="fa-solid fa-satellite-dish text-emerald-500 animate-pulse"></i>
+                            <span>Live Activity Stream</span>
+                        </h4>
+                        <span class="text-[10px] bg-mintsoft dark:bg-emerald-900/40 text-calm-800 dark:text-emerald-300 px-2 py-0.5 rounded-full font-mono font-bold">Real-time</span>
+                    </div>
+                    <div id="live-feed-box" class="bg-calm-50 dark:bg-zinc-900 p-3 rounded-2xl border border-calm-200 dark:border-zinc-700 flex-1 overflow-y-auto max-h-[300px] space-y-2.5">
+                        <!-- Populated dynamically by real-time simulation -->
+                    </div>
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+    <!-- Live Toast Notification Popup Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- Gentle Modal Backdrop -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-calm-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-zinc-800 p-6 rounded-3xl max-w-md w-full shadow-lg border border-calm-200 dark:border-zinc-700 text-center space-y-4">
+            <div id="modal-icon" class="w-12 h-12 rounded-full bg-mintsoft dark:bg-emerald-900 text-calm-600 dark:text-emerald-300 flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h3 id="modal-title" class="font-bold text-lg text-calm-900 dark:text-zinc-100">Success!</h3>
+            <p id="modal-message" class="text-sm text-calm-600 dark:text-zinc-300">Action completed safely.</p>
+            <button onclick="closeModal()" class="w-full bg-calm-500 hover:bg-calm-600 text-white font-semibold py-3 rounded-2xl text-sm transition-smooth">Got it, thank you</button>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        // State Management
+        let currentTab = 1;
+        let isSpeaking = false;
+        let sensoryModeIndex = 0; // 0: Gentle Pastel, 1: Dark Calm, 2: Low-Stimulation High Contrast
+        let liveRevenue = 4850.00;
+        let payrollSeconds = 3600; // 1 hour elapsed accumulator
+
+        // Initial Data Lists
+        let bookings = [
+            { id: 101, guest: "Alex Smith", room: "Quiet Corner Room", status: "Confirmed", time: "2 mins ago" },
+            { id: 102, guest: "Taylor Reed", room: "Sunny Garden Suite", status: "Checked-In", time: "12 mins ago" }
+        ];
+
+        let checklistTasks = [
+            { id: 1, text: "Review today's incoming reservation list", done: true },
+            { id: 2, text: "Verify secure payment receipt", done: true },
+            { id: 3, text: "Check staff weekly wage disbursements", done: false },
+            { id: 4, text: "Review website welcoming greeting", done: false }
+        ];
+
+        window.onload = function() {
+            startLiveClock();
+            startRealTimeStreamSimulator();
+            startPayrollTicker();
+            renderTabContent(currentTab);
+            pushToast("Workspace initialized calmly and securely.", "info");
+        };
+
+        // Live Clock
+        function startLiveClock() {
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('live-clock').innerText = now.toLocaleTimeString();
+            }, 1000);
+        }
+
+        // Real-Time Simulated Incoming Bookings Feed & Revenue Tick
+        function startRealTimeStreamSimulator() {
+            const sampleGuests = ["Jordan Lee", "Morgan Avery", "Casey Jordan", "Sam Chen", "Riley Quinn"];
+            const sampleRooms = ["Quiet Corner Room", "Sunny Garden Suite", "Cozy Studio Retreat"];
+
+            setInterval(() => {
+                const randomGuest = sampleGuests[Math.floor(Math.random() * sampleGuests.length)];
+                const randomRoom = sampleRooms[Math.floor(Math.random() * sampleRooms.length)];
+                const randomAmount = Math.floor(Math.random() * 120) + 80;
+
+                // Update live revenue safely
+                liveRevenue += randomAmount;
+                const tickerEl = document.getElementById('live-revenue-ticker');
+                if(tickerEl) tickerEl.innerText = `$${liveRevenue.toFixed(2)}`;
+
+                // Add to bookings
+                const newBooking = { id: Math.floor(Math.random() * 900) + 100, guest: randomGuest, room: randomRoom, status: "New Booking", time: "Just now" };
+                bookings.unshift(newBooking);
+                if(bookings.length > 8) bookings.pop();
+
+                // Push live notification toast & feed item
+                pushToast(`New booking received from ${randomGuest} ($${randomAmount})`, "success");
+                pushFeedItem(`New guest <strong>${randomGuest}</strong> booked <strong>${randomRoom}</strong> (+ $${randomAmount})`);
+
+                // If currently on Tab 2, re-render to show live updates
+                if(currentTab === 2) renderTabContent(2);
+
+            }, 12000); // every 12 seconds
+        }
+
+        // Payroll Real-Time Counter
+        function startPayrollTicker() {
+            setInterval(() => {
+                payrollSeconds++;
+                const timerEl = document.getElementById('payroll-live-timer');
+                if(timerEl) {
+                    const hrs = String(Math.floor(payrollSeconds / 3600)).padStart(2, '0');
+                    const mins = String(Math.floor((payrollSeconds % 3600) / 60)).padStart(2, '0');
+                    const secs = String(payrollSeconds % 60).padStart(2, '0');
+                    timerEl.innerText = `${hrs}:${mins}:${secs}`;
+                }
+            }, 1000);
+        }
+
+        // Toast Notification System
+        function pushToast(message, type = "info") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto bg-white dark:bg-zinc-800 border ${type === 'success' ? 'border-emerald-400 text-emerald-900 dark:text-emerald-200' : 'border-calm-300 text-calm-900 dark:text-zinc-100'} p-4 rounded-2xl shadow-lg flex items-center space-x-3 transform translate-y-4 opacity-0 transition-all duration-300 max-w-sm`;
+            
+            let iconClass = type === 'success' ? 'fa-circle-check text-emerald-500' : 'fa-circle-info text-calm-500';
+            toast.innerHTML = `
+                <i class="fa-solid ${iconClass} text-lg"></i>
+                <div class="text-xs font-semibold leading-relaxed">${message}</div>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Live Feed Item
+        function pushFeedItem(htmlText) {
+            const feedBox = document.getElementById('live-feed-box');
+            if(!feedBox) return;
+            const item = document.createElement('div');
+            item.className = "bg-white dark:bg-zinc-800 p-2.5 rounded-xl border border-calm-200 dark:border-zinc-700 text-xs text-calm-800 dark:text-zinc-300 flex items-center space-x-2 animate-fade";
+            item.innerHTML = `<i class="fa-solid fa-bolt text-emerald-500 text-[10px]"></i> <span class="flex-1">${htmlText}</span>`;
+            feedBox.insertBefore(item, feedBox.firstChild);
+            if(feedBox.children.length > 6) {
+                feedBox.removeChild(feedBox.lastChild);
+            }
+        }
+
+        // Tab Switching
+        function switchTab(tabNum) {
+            currentTab = tabNum;
+            for(let i=1; i<=6; i++) {
+                const btn = document.getElementById(`tab-${i}`);
+                if(i === tabNum) {
+                    btn.className = "tab-btn py-3 px-3 rounded-2xl text-xs font-bold text-center bg-calm-500 text-white transition-smooth shadow-sm flex items-center justify-center space-x-2";
+                } else {
+                    btn.className = "tab-btn py-3 px-3 rounded-2xl text-xs font-bold text-center bg-calm-100 dark:bg-zinc-700 text-calm-700 dark:text-zinc-300 hover:bg-calm-200 dark:hover:bg-zinc-600 transition-smooth flex items-center justify-center space-x-2";
+                }
+            }
+            renderTabContent(tabNum);
+        }
+
+        // Render Module Content based on Tab
+        function renderTabContent(num) {
+            const container = document.getElementById('module-container');
+            let html = '';
+            let assistantPrompt = "";
+
+            if(num === 1) {
+                assistantPrompt = "Welcome Tab: This is your starting dashboard. You can review your daily task checklist. Clicking the checkmarks gives a satisfying dopamine boost and updates your progress.";
+                let taskListHtml = checklistTasks.map(t => `
+                    <div onclick="toggleTask(${t.id})" class="flex items-center space-x-3 p-3 rounded-2xl border ${t.done ? 'bg-mintsoft dark:bg-emerald-950/30 border-calm-300 dark:border-emerald-800 text-calm-900 dark:text-emerald-200' : 'bg-softblue dark:bg-zinc-700 border-calm-200 dark:border-zinc-600 text-calm-800 dark:text-zinc-200'} cursor-pointer transition-smooth">
+                        <div class="w-6 h-6 rounded-lg ${t.done ? 'bg-calm-500 text-white' : 'bg-white dark:bg-zinc-800 border border-calm-300'} flex items-center justify-center text-xs">
+                            ${t.done ? '<i class="fa-solid fa-check"></i>' : ''}
+                        </div>
+                        <span class="text-xs font-semibold ${t.done ? 'line-through opacity-75' : ''}">${t.text}</span>
+                    </div>
+                `).join('');
+
+                html = `
+                    <div class="space-y-4">
+                        <div class="inline-flex items-center space-x-2 bg-mintsoft dark:bg-emerald-900/40 text-calm-800 dark:text-emerald-300 px-3 py-1 rounded-full text-xs font-bold border border-calm-300 dark:border-emerald-700">
+                            <i class="fa-solid fa-house-chimney"></i>
+                            <span>Module 1: Welcome & Onboarding</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-calm-900 dark:text-zinc-100">Welcome to Your Calm Daily Hub</h2>
+                        <p class="text-sm text-calm-600 dark:text-zinc-300 leading-relaxed">
+                            Take a deep breath. Everything is organized in predictable, gentle steps. Check off your tasks below as you complete them to celebrate your progress.
+                        </p>
+                    </div>
+                    <div class="space-y-3 pt-2">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-calm-700 dark:text-zinc-400">Your Calm Daily Checklist</h3>
+                        <div class="space-y-2">${taskListHtml}</div>
+                    </div>
+                    <div class="pt-4 border-t border-calm-100 dark:border-zinc-700 flex justify-end">
+                        <button onclick="switchTab(2)" class="bg-calm-500 hover:bg-calm-600 text-white px-6 py-3 rounded-2xl text-xs font-semibold shadow-sm transition-smooth flex items-center space-x-2">
+                            <span>Proceed to Live Bookings</span> <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                `;
+            } else if(num === 2) {
+                assistantPrompt = "Live Bookings Tab: Here you see incoming guest reservations in real time. You can manually add a booking or inspect existing guest stays.";
+                let bookingsHtml = bookings.map(b => `
+                    <div class="flex items-center justify-between p-3.5 bg-softblue dark:bg-zinc-700/60 rounded-2xl border border-calm-200 dark:border-zinc-600">
+                        <div>
+                            <h4 class="text-xs font-bold text-calm-900 dark:text-zinc-100">${b.guest}</h4>
+                            <p class="text-[11px] text-calm-600 dark:text-zinc-400">${b.room} • <span class="font-mono">${b.time}</span></p>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-mintsoft dark:bg-emerald-900/60 text-calm-800 dark:text-emerald-300 border border-calm-300 dark:border-emerald-700">${b.status}</span>
+                    </div>
+                `).join('');
+
+                html = `
+                    <div class="space-y-4">
+                        <div class="inline-flex items-center space-x-2 bg-mintsoft dark:bg-emerald-900/40 text-calm-800 dark:text-emerald-300 px-3 py-1 rounded-full text-xs font-bold border border-calm-300 dark:border-emerald-700">
+                            <i class="fa-solid fa-bell"></i>
+                            <span>Module 2: Live Bookings Feed</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-calm-900 dark:text-zinc-100">Guest Reservations</h2>
+                        <p class="text-sm text-calm-600 dark:text-zinc-300">New bookings arrive automatically every few seconds with gentle notification alerts.</p>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <input type="text" id="manual-guest" placeholder="New guest name..." class="flex-1 bg-softblue dark:bg-zinc-700 border border-calm-300 dark:border-zinc-600 rounded-xl px-3 py-2 text-xs text-calm-900 dark:text-zinc-100 focus:outline-none">
+                            <button onclick="addManualBooking()" class="bg-calm-500 hover:bg-calm-600 text-white px-4 py-2 rounded-xl text-xs font-semibold">Add Booking</button>
+                        </div>
+                        <div class="space-y-2 max-h-[220px] overflow-y-auto">${bookingsHtml}</div>
+                    </div>
+                    <div class="pt-4 border-t border-calm-100 dark:border-zinc-700 flex justify-between">
+                        <button onclick="switchTab(1)" class="bg-calm-100 dark:bg-zinc-700 text-calm-800 dark:text-zinc-200 px-5 py-2.5 rounded-2xl text-xs font-semibold">Back</button>
+                        <button onclick="switchTab(3)" class="bg-calm-500 hover:bg-calm-600 text-white px-6 py-3 rounded-2xl text-xs font-semibold">Proceed to Payments</button>
+                    </div>
+                `;
+            } else if(num === 3) {
+                assistantPrompt = "Payments & Refunds Tab: Process secure guest payments or issue fair, transparent refunds if plans change.";
+                html = `
+                    <div class="space-y-4">
+                        <div class="inline-flex items-center space-x-2 bg-mintsoft dark:bg-emerald-900/40 text-calm-800 dark:text-emerald-300 px-3 py-1 rounded-full text-xs font-bold border border-calm-300 dark:border-emerald-700">
+                            <i class="fa-solid fa-credit-card"></i>
+                            <span>Module 3: Payments & Refunds</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-calm-900 dark:text-zinc-100">Secure Transactions</h2>
+                        <p class="text-sm text-calm-600 dark:text-zinc-300">Record incoming payments or issue gentle refunds cleanly without confusion.</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-softblue dark:bg-zinc-700/50 p-4 rounded-2xl border border-calm-300 dark:border-zinc-600 space-y-3">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-calm-800 dark:text-emerald-400">Record Payment</h3>
+                            <input type="text" id="pay-name" placeholder="Guest Name" class="w-full bg-white dark:bg-zinc-800 border border-calm-300 dark:border-zinc-600 rounded-xl p-2.5 text-xs text-calm-900 dark:text-zinc-100">
+                            <input type="number" id="pay-amt" placeholder="Amount ($)" class="w-full bg-white dark:bg-zinc-800 border border-calm-300 dark:border-zinc-600 rounded-xl p-2.5 text-xs text-calm-900 dark:text-zinc-100">
+                            <button onclick="processPaymentAction()" class="w-full bg-calm-500 hover:bg-calm-600 text-white py-2.5 rounded-xl text-xs font-semibold">Submit Payment</button>
+                        </div>
+                        <div class="bg-softblue dark:bg-zinc-700/50 p-4 rounded-2xl border border-calm-300 dark:border-zinc-600 space-y-3">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-calm-800 dark:text-emerald-400">Issue Refund</h3>
+                            <input type="text" id="ref-name" placeholder="Guest Name" class="w-full bg-white dark:bg-zinc-800 border border-calm-300 dark:border-zinc-600 rounded-xl p-2.5 text-xs text-calm-900 dark:text-zinc-100">
+                            <select id="ref-reason" class="w-full bg-white dark:bg-zinc-800 border border-calm-300 dark:border-zinc-600 rounded-xl p-2.5 text-xs text-calm-900 dark:text-zinc-100">
+                                <option>Travel plans changed</option>
+                                <option>Schedule adjustment</option>
+                                <option>Goodwill credit</option>
+                            </select>
+                            <button onclick="processRefundAction()" class="w-full bg-calm-600 hover:bg-calm-700 text-white py-2.5 rounded-xl text-xs font-semibold">Process Refund</button>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-calm-100 dark:border-zinc-700 flex justify-between">
+                        <button onclick="switchTab(2)" class="bg-calm-100 dark:bg-zinc-700 text-calm-800 dark:text-zinc-200 px-5 py-2.5 rounded-2xl text-xs font-semibold">Back</button>
+                        <button onclick="switchTab(4)" class="bg-calm-500 hover:bg-calm-600 text-white px-6 py-3 rounded-2xl text-xs font-semibold">Proceed to Website Manager</button>
+                    </div>
+                `;
+            } else if(num === 4) {
+                assistantPrompt = "Website Manager Tab: Customize your welcoming public landing page title. You see instant previews so you know exactly what visitors read.";
+                html = `
+                    <div class="space-y-4">
+                        <div class="inline-flex items-center space-x-2 bg-mintsoft dark:bg-emerald-900/40 text-calm-800 dark:text-emerald-300 px-3 py-1 rounded-full text-xs font-bold border border-calm-300 dark:border-emerald-700">
+                            <i class="fa-solid fa-globe"></i>
+                            <span>Module 4: Website Manager</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-calm-900 dark:text-zinc-100">Landing Page Customizer</h2>
+                        <p class="text-sm text-calm-600 dark:text-zinc-300">Update your public greeting and see instant preview changes.</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-calm-700 dark:text-zinc-300 mb-1">Main Welcome Heading</label>
+                            <input type="text" id="web-title-input" value="Welcome to The Terminal Oasis" class="w-full bg-softblue dark:bg-zinc-700 border border-calm-300 dark:border-zinc-600 rounded-xl p-3 text-xs text-calm-900 dark:text-zinc-100">
+                        </div>
+                        <div class="bg-mintsoft dark:bg-emerald-950/40 p-4 rounded-2xl border border-calm-300 dark:border-emerald-800 space-y-2">
+                            <h4 class="text-xs font-bold text-calm-900 dark:text-emerald-300">Live Visitor Preview:</h4>
+                            <div id="website-preview-box" class="bg-white dark:bg-zinc-800 p-4 rounded-xl border border-calm-200 dark:border-zinc-700 text-center font-bold text-calm-900 dark:text-zinc-100 text-sm">
+                                Welcome to The Terminal Oasis
+                            </div>
+                        </div>
+                        <button onclick="publishWebsite()" class="w-full bg-calm-500 hover:bg-calm-600 text-white py-3 rounded-xl text-xs font-semibold">Publish Website Changes</button>
+                    </div>
+                    <div class="pt-4 border-t border-calm-100 dark:border-zinc-700 flex justify-between">
+                        <button onclick="switchTab(3)" class="bg-calm-100 dark:bg-zinc-700 text-calm-800 dark:text-zinc-200 px-5 py-2.5 rounded-2xl text-xs font-semibold">Back</button>
+                        <button onclick="switchTab(5)" class="bg-calm-500 hover:bg-calm-600 text-white px-6 py-3 rounded-2xl text-xs font-semibold">Proceed to Accounting</button>
+                    </div>
+                `;
+            } else if(num === 5) {
+                assistantPrompt = "Payroll & Accounting Tab: Monitor staff wages with a live active counter and view monthly earnings summaries.";
+                html = `
+                    <div class="space-y-4">
+                        <div class="inline-flex items-center space-x-2 bg-mintsoft dark:bg-emerald-900/40 text-calm-800 dark:text-emerald-300 px-3 py-1 rounded-full text-xs font-bold border border-calm-300 dark:border-emerald-700">
+                            <i class="fa-solid fa-calculator"></i>
+                            <span>Module 5: Payroll & Accounting</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-calm-900 dark:text-zinc-100">Financials & Staff Wages</h2>
+                        <p class="text-sm text-calm-600 dark:text-zinc-300">Review monthly totals and active payroll timers with complete clarity.</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-softblue dark:bg-zinc-700/50 p-4 rounded-2xl border border-calm-300 dark:border-zinc-600 space-y-2">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-calm-800 dark:text-emerald-400">Live Payroll Timer</h3>
+                            <p class="text-[11px] text-calm-600 dark:text-zinc-400">Active payroll accumulation counter:</p>
+                            <div id="payroll-live-timer" class="font-mono text-xl font-bold text-calm-900 dark:text-zinc-100 py-1">01:00:00</div>
+                            <button onclick="disbursePayroll()" class="w-full bg-calm-500 hover:bg-calm-600 text-white py-2 rounded-xl text-xs font-semibold">Disburse Weekly Wages</button>
+                        </div>
+                        <div class="bg-softblue dark:bg-zinc-700/50 p-4 rounded-2xl border border-calm-300 dark:border-zinc-600 space-y-2">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-calm-800 dark:text-emerald-400">Monthly Accounting Summary</h3>
+                            <p class="text-xs text-calm-800 dark:text-zinc-200">Earnings: <strong class="font-mono">$4,850.00</strong></p>
+                            <p class="text-xs text-calm-800 dark:text-zinc-200">Expenses: <strong class="font-mono">$1,200.00</strong></p>
+                            <p class="text-xs text-emerald-700 dark:text-emerald-400 font-bold">Net Profit: <span class="font-mono">$3,650.00</span></p>
+                            <button onclick="exportReport()" class="w-full bg-calm-600 hover:bg-calm-700 text-white py-2 rounded-xl text-xs font-semibold">Export Calm Report</button>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-calm-100 dark:border-zinc-700 flex justify-between">
+                        <button onclick="switchTab(4)" class="bg-calm-100 dark:bg-zinc-700 text-calm-800 dark:text-zinc-200 px-5 py-2.5 rounded-2xl text-xs font-semibold">Back</button>
+                        <button onclick="switchTab(6)" class="bg-calm-500 hover:bg-calm-600 text-white px-6 py-3 rounded-2xl text-xs font-semibold">Proceed to Subscriptions</button>
+                    </div>
+                `;
+            } else if(num === 6) {
+                assistantPrompt = "Monthly Subscriptions Tab: Manage member subscription renewals safely and predictably.";
+                html = `
+                    <div class="space-y-4">
+                        <div class="inline-flex items-center space-x-2 bg-mintsoft dark:bg-emerald-900/40 text-calm-800 dark:text-emerald-300 px-3 py-1 rounded-full text-xs font-bold border border-calm-300 dark:border-emerald-700">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            <span>Module 6: Monthly Subscriptions</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-calm-900 dark:text-zinc-100">Member Subscriptions</h2>
+                        <p class="text-sm text-calm-600 dark:text-zinc-300">Active recurring membership plans renewing smoothly each month.</p>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3.5 bg-softblue dark:bg-zinc-700/60 rounded-2xl border border-calm-200 dark:border-zinc-600">
+                            <div>
+                                <h4 class="text-xs font-bold text-calm-900 dark:text-zinc-100">Community Access Plan</h4>
+                                <p class="text-[11px] text-calm-600 dark:text-zinc-400">24 active members • Renews monthly</p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-mintsoft dark:bg-emerald-900/60 text-calm-800 dark:text-emerald-300 border border-calm-300 dark:border-emerald-700">Active ($99/mo)</span>
+                        </div>
+                        <button onclick="renewSubscriptions()" class="w-full bg-calm-500 hover:bg-calm-600 text-white py-3 rounded-xl text-xs font-semibold">Process All Subscription Renewals</button>
+                    </div>
+                    <div class="pt-4 border-t border-calm-100 dark:border-zinc-700 flex justify-between">
+                        <button onclick="switchTab(5)" class="bg-calm-100 dark:bg-zinc-700 text-calm-800 dark:text-zinc-200 px-5 py-2.5 rounded-2xl text-xs font-semibold">Back</button>
+                        <button onclick="switchTab(1)" class="bg-calm-500 hover:bg-calm-600 text-white px-6 py-3 rounded-2xl text-xs font-semibold">Return to Start</button>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+            document.getElementById('assistant-speech-box').innerText = assistantPrompt;
+        }
+
+        // Checklist task toggler with dopamine celebration
+        function toggleTask(id) {
+            const task = checklistTasks.find(t => t.id === id);
+            if(task) {
+                task.done = !task.done;
+                if(task.done) {
+                    pushToast("Task completed! Great job!", "success");
+                }
+                renderTabContent(currentTab);
+            }
+        }
+
+        // Manual booking addition
+        function addManualBooking() {
+            const input = document.getElementById('manual-guest');
+            if(!input || !input.value.trim()) return;
+            const name = input.value.trim();
+            bookings.unshift({ id: Date.now(), guest: name, room: "Sunny Garden Suite", status: "Confirmed", time: "Just now" });
+            input.value = "";
+            pushToast(`Booking added successfully for ${name}`, "success");
+            pushFeedItem(`Manual booking added for <strong>${name}</strong>`);
+            renderTabContent(2);
+        }
+
+        // Payment action
+        function processPaymentAction() {
+            const name = document.getElementById('pay-name').value || "Guest";
+            const amt = document.getElementById('pay-amt').value || "100";
+            liveRevenue += parseFloat(amt);
+            const tickerEl = document.getElementById('live-revenue-ticker');
+            if(tickerEl) tickerEl.innerText = `$${liveRevenue.toFixed(2)}`;
+            pushToast(`Payment of $${amt} received from ${name}`, "success");
+            pushFeedItem(`Secure payment of $${amt} recorded for <strong>${name}</strong>`);
+            openModal("Payment Successful", `Received $${amt} securely from ${name}. Records updated.`);
+        }
+
+        // Refund action
+        function processRefundAction() {
+            const name = document.getElementById('ref-name').value || "Guest";
+            const reason = document.getElementById('ref-reason').value;
+            pushToast(`Refund processed for ${name}`, "info");
+            pushFeedItem(`Refund issued for <strong>${name}</strong> (${reason})`);
+            openModal("Refund Processed", `Refund sent securely to ${name}. Reason: ${reason}.`);
+        }
+
+        // Website Manager
+        function publishWebsite() {
+            const titleInput = document.getElementById('web-title-input');
+            const previewBox = document.getElementById('website-preview-box');
+            if(titleInput && previewBox) {
+                previewBox.innerText = titleInput.value;
+            }
+            pushToast("Website updated successfully!", "success");
+            pushFeedItem("Public landing page heading updated.");
+        }
+
+        // Payroll
+        function disbursePayroll() {
+            pushToast("Payroll successfully disbursed to staff!", "success");
+            pushFeedItem("Weekly payroll disbursed ($1,250.00)");
+            openModal("Payroll Disbursed", "Staff weekly wages have been successfully disbursed.");
+        }
+
+        // Accounting export
+        function exportReport() {
+            pushToast("Calm financial report downloaded safely.", "success");
+            pushFeedItem("Monthly financial report exported.");
+        }
+
+        // Subscriptions
+        function renewSubscriptions() {
+            pushToast("All monthly subscriptions renewed successfully.", "success");
+            pushFeedItem("24 member subscriptions renewed ($2,376.00)");
+            openModal("Renewals Complete", "All active monthly subscriptions have successfully renewed.");
+        }
+
+        // Sensory Mode Cycle (Gentle -> Dark Calm -> Low-Stimulation High Contrast)
+        function cycleSensoryMode() {
+            sensoryModeIndex = (sensoryModeIndex + 1) % 3;
+            const label = document.getElementById('sensory-label');
+            const htmlEl = document.documentElement;
+            const bodyEl = document.body;
+
+            bodyEl.classList.remove('low-stim');
+            htmlEl.classList.remove('dark');
+
+            if(sensoryModeIndex === 0) {
+                label.innerText = "Mode: Gentle";
+                pushToast("Sensory mode: Gentle Pastel", "info");
+            } else if(sensoryModeIndex === 1) {
+                htmlEl.classList.add('dark');
+                label.innerText = "Mode: Dark Calm";
+                pushToast("Sensory mode: Dark Calm", "info");
+            } else {
+                bodyEl.classList.add('low-stim');
+                label.innerText = "Mode: Low-Stim";
+                pushToast("Sensory mode: Low-Stimulation High Contrast", "info");
+            }
+        }
+
+        // Text-to-Speech Assistant
+        function toggleSpeech() {
+            if (!('speechSynthesis' in window)) {
+                alert('Text-to-speech not supported.');
+                return;
+            }
+            const btnLabel = document.getElementById('speech-label');
+            if(isSpeaking) {
+                window.speechSynthesis.cancel();
+                isSpeaking = false;
+                btnLabel.innerText = "Read Aloud";
+                return;
+            }
+            const text = document.getElementById('assistant-speech-box').innerText;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.onend = () => {
+                isSpeaking = false;
+                btnLabel.innerText = "Read Aloud";
+            };
+            isSpeaking = true;
+            btnLabel.innerText = "Stop";
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Assistant literal question handler
+        function askAssistant() {
+            const input = document.getElementById('assistant-input');
+            if(!input || !input.value.trim()) return;
+            const q = input.value.trim().toLowerCase();
+            input.value = "";
+
+            let reply = "I am here to help! You can click any tab above to navigate modules safely.";
+            if(q.includes('book')) reply = "Module 2 lets you see incoming bookings in real time as they arrive automatically.";
+            else if(q.includes('pay') || q.includes('money')) reply = "Module 3 helps you record payments or issue refunds with complete clarity.";
+            else if(q.includes('web')) reply = "Module 4 allows you to edit your website heading and see instant previews.";
+            else if(q.includes('payroll') || q.includes('staff')) reply = "Module 5 tracks active payroll time and lets you disburse weekly wages.";
+
+            document.getElementById('assistant-speech-box').innerText = reply;
+            pushToast("Assistant answered your question.", "info");
+        }
+
+        // Modal Helpers
+        function openModal(title, msg) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = msg;
+            document.getElementById('modal-backdrop').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-backdrop').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
